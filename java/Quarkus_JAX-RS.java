@@ -13,6 +13,31 @@ public class ExampleResource {
     public String hello() {
         return "hello";
     }
+    
+    @Inject
+    JsonWebToken jwt;
+
+    /*
+    
+    function getIdToken(){return "jwt string";};
+  
+    fetch("http://localhost:8080/hello/demo",{
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer '+getIdToken()
+        }
+    }).then(function(response){
+        console.log(response);
+    });
+    
+     */
+    @Path("demo")
+    @RolesAllowed({"user", "system"})
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    public String jwtSubject() {
+        return "JWT Subject - " + jwt.getSubject();
+    }
 }
 
 
