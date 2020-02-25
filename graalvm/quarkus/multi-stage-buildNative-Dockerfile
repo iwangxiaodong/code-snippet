@@ -1,0 +1,31 @@
+# docker run -it --rm gcr.io/project-161922/our-ent:1.0.0-b1
+FROM oracle/graalvm-ce:20.0.0-java11 AS build-env
+RUN gu install native-image
+RUN gu list
+
+RUN pwd
+RUN mkdir ~/.ssh/
+RUN echo '   StrictHostKeyChecking no'>~/.ssh/config
+RUN sed -i 's/#   StrictHostKeyChecking ask/   StrictHostKeyChecking no/g' ~/.ssh/config
+RUN cat ~/.ssh/config
+
+# sshpass属于oracle-epel-release-el7.x86_64仓库
+RUN yum install -y oracle-epel-release-el7.x86_64
+RUN yum install -y git sshpass
+#RUN mkdir -p /app/
+RUN sshpass -p 密码 git clone --depth 1 vcs@vcs.wangxiaodong.com:/media/mydisk/gitdata/education.git
+RUN ls -la education
+WORKDIR /education/
+RUN rm /education/settings.gradle
+RUN chmod a+x /education/gradlew
+RUN ./gradlew -b entertainment/build.gradle buildNative -S --info
+RUN ls -la /education/entertainment/build/
+
+FROM frolvlad/alpine-glibc:latest
+WORKDIR /work/
+RUN apk update && apk add --no-cache curl libstdc++ && rm -rf /var/cache/apk/*
+#RUN curl --digest -u webdav:密码 https://maven.openle.com/any/entertainment-unspecified-runner -o /work/app
+COPY --from=build-env /education/entertainment/build/entertainment-unspecified-runner /work/app
+RUN chmod 775 /work/app
+EXPOSE 8080
+CMD ["./app"]
