@@ -1,0 +1,23 @@
+# docker run -it --rm gcr.io/project-123456/x-sample:1.0.0
+FROM oracle/graalvm-ce:20.0.0-java11 AS build-env
+RUN gu list
+RUN gu install native-image
+RUN gu list
+#RUN gu install ruby
+
+RUN mkdir -p /app/
+RUN echo 'public class Hi { public static void main(String[] args) { System.out.println("Hello, World!"); } }' > /app/Hi.java
+RUN cat /app/Hi.java
+WORKDIR /app/
+RUN java -version
+RUN javac *.java
+#RUN jar cfe main.jar Hi *.class
+RUN native-image Hi
+
+FROM frolvlad/alpine-glibc:latest
+WORKDIR /work/
+RUN apk update && apk add --no-cache curl libstdc++ && rm -rf /var/cache/apk/*
+COPY --from=build-env /app/hi /work/app
+RUN chmod 775 /work/app
+EXPOSE 8080
+CMD ["./app"]
