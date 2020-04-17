@@ -21,3 +21,10 @@ COPY --from=build-env /app/hi /work/app
 RUN chmod 775 /work/app
 EXPOSE 8080
 CMD ["./app"]
+
+
+# 如果不安装native-image，则可用以下运行容器：
+FROM gcr.io/distroless/java:11
+COPY --from=build-env /app /app
+WORKDIR /app
+CMD ["main.jar"]
