@@ -1,0 +1,17 @@
+# docker run -it --rm gcr.io/project-123456/x-sample:1.0.0
+FROM openjdk:11-jdk-slim AS build-env
+RUN mkdir -p /app/
+RUN echo 'public class Hi { \n\
+  public static void main(String[] args) { \n\
+    System.out.println("Hello, World!"); \n\
+  } \n\
+}' > /app/Hi.java
+RUN cat /app/Hi.java
+WORKDIR /app/
+RUN javac *.java
+RUN jar cfe main.jar Hi *.class
+
+FROM gcr.io/distroless/java:11
+COPY --from=build-env /app /app
+WORKDIR /app
+CMD ["main.jar"]
