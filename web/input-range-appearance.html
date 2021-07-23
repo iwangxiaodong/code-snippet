@@ -1,0 +1,24 @@
+
+<input type="range" value="30">
+<style>
+input[type="range"] {
+    -webkit-appearance: none;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 0; /* iOS */
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    /* 右端填充色 */
+    background: yellow;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 40px;
+    /* 中间刻度背景色 */
+    background: #fff;
+    /* 左端填充色 */
+    box-shadow: -100vw 0 0 100vw red;
+    border: 2px solid #999;
+}
+</style>
