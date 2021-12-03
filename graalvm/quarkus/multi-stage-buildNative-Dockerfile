@@ -1,4 +1,36 @@
-#  Google Cloud Build需要机型为N1_HIGHCPU_8方能执行buildNative，耗时10分钟内
+Google Cloud Build需要机型为N1_HIGHCPU_8方能执行原生构建，耗时6分钟
+
+源码目录打包构建：
+    FROM ghcr.io/graalvm/graalvm-ce:java17-21.3.0 AS build-env
+    # ubi-quarkus-native-image镜像似乎无法创建build/目录，也未内置gradle
+    RUN whoami
+
+    RUN gu install native-image
+    RUN gu list
+
+    # upload sources content-management-system.tar
+    COPY content-management-system/ /project/
+    RUN ls -la /project/
+
+    WORKDIR /project/
+    #RUN rm settings.gradle
+    ENV GITHUB_TOKEN="***"
+
+    # graalvm-ce已内置gradle，但优先选用开发者指定版本的gradlew
+    RUN ./gradlew -b api/build.gradle build -Dquarkus.package.type=native -Dquarkus.profile=production -S --info
+    RUN ls -la api/build/
+    
+    # quay.io/quarkus/quarkus-distroless-image:1.0
+    FROM debian:stretch-slim
+
+    COPY --from=build-env /project/api/build/api-1.0.0-SNAPSHOT-runner /work/app
+    #COPY api-1.0.0-SNAPSHOT-runner /work/app
+    RUN chmod 775 /work/app
+    WORKDIR /work/
+
+    EXPOSE 8080
+    CMD ["./app"]
+
 
 #  URL传密码方式 git clone ...
 FROM quay.io/quarkus/centos-quarkus-maven:20.0.0-java11 AS build
@@ -10,6 +42,7 @@ RUN rm education/settings.gradle
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
 RUN gradle -b education/entertainment/build.gradle clean buildNative
 RUN ls -la education/entertainment/build/
+ 
  
  # 或者 oracle/graalvm 容器构建
     FROM oracle/graalvm-ce:20.0.0-java11 AS build-env
@@ -23,6 +56,7 @@ RUN ls -la education/entertainment/build/
     RUN chmod a+x gradlew
     RUN ./gradlew -b entertainment/build.gradle buildNative -S --info
     RUN ls -la /education/entertainment/build/
+
 
 # 或者 SSH密码方式 git clone ...
 FROM oracle/graalvm-ce:20.0.0-java11 AS build-env
@@ -44,6 +78,7 @@ RUN rm settings.gradle
 RUN chmod a+x gradlew
 RUN ./gradlew -b entertainment/build.gradle buildNative -S --info
 RUN ls -la /education/entertainment/build/
+
 
 # 运行时
 FROM frolvlad/alpine-glibc:latest
