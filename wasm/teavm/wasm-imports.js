@@ -24,15 +24,15 @@ function returnStringResult(stringPtr, wasmInstance) {
 }
 
 function newStringParam(stringValue, wasmInstance) {
-    let javaArg = wasmInstance.exports.teavm_allocateString(stringValue.length);
-    let javaArgAddress = wasmInstance.exports.teavm_objectArrayData(
-            wasmInstance.exports.teavm_stringData(javaArg));
-    let javaArgData = new DataView(wasmInstance.exports.memory.buffer,
-            javaArgAddress, stringValue.length * 2);
+    let stringPtr = wasmInstance.exports.teavm_allocateString(stringValue.length);
+    let arrayPtr = wasmInstance.exports.teavm_objectArrayData(
+            wasmInstance.exports.teavm_stringData(stringPtr));
+    let arrayData = new DataView(wasmInstance.exports.memory.buffer,
+            arrayPtr, stringValue.length * 2);
     for (let j = 0; j < stringValue.length; ++j) {
-        javaArgData.setUint16(j * 2, stringValue.charCodeAt(j), true);
+        arrayData.setUint16(j * 2, stringValue.charCodeAt(j), true);
     }
-    return javaArg;
+    return stringPtr;
 }
 
 fetch('http://localhost:8080/releases/classes.wasm')
