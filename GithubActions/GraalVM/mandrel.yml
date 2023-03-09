@@ -1,0 +1,36 @@
+name: 未写则使用本配置文件名；自动触发位置.github/workflows/mandrel.yml
+on: [push, pull_request]
+jobs:
+  build:
+    name: Hi on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # or windows-latest
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          # or latest、22.3.1即GraalVM版本号
+          version: 'mandrel-22.3.1.0-Final'
+          java-version: '17'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # mandrel不额外区分native-image组件
+          #components: 'native-image'
+          # mandrel无native-image-job-reports配置
+          #native-image-job-reports: 'true'
+
+      - name: Build and run Hi.java
+        run: |
+          echo 'public class Hi { public static void main(String[] args) { System.out.println("Hi!"); } }' > Hi.java
+          javac Hi.java
+          native-image Hi
+          ./hi
+      
+      - name: Upload binary
+        uses: actions/upload-artifact@v3
+        with:
+          name: hi-${{ matrix.os }}
+          path: hi*
