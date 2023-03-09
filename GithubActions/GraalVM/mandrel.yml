@@ -1,5 +1,9 @@
 name: 未写则使用本配置文件名；自动触发位置.github/workflows/mandrel.yml
-on: [push, pull_request]
+#on: [push, pull_request] #或手动触发 on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
 jobs:
   build:
     name: Hi on ${{ matrix.os }}
