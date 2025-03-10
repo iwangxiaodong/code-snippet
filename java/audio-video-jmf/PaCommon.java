@@ -83,22 +83,22 @@ public class PaCommon {
         System.out.println(new App().getGreeting());
         LibJitsi.start();
         LibJitsi.getConfigurationService().setProperty(DISABLE_VIDEO_SUPPORT_PNAME, true);
-        MediaService mediaService = LibJitsi.getMediaService();
-        MediaDevice device = mediaService.getDefaultDevice(MediaType.AUDIO, MediaUseCase.CALL);
-        MediaStream mediaStream = mediaService.createMediaStream(device);
-        var deviceSession = ((MediaStreamImpl) mediaStream).getDeviceSession();
+//        MediaService mediaService = LibJitsi.getMediaService();
+//        MediaDevice device = mediaService.getDefaultDevice(MediaType.AUDIO, MediaUseCase.CALL);
+//        MediaStream mediaStream = mediaService.createMediaStream(device);
+//        var deviceSession = ((MediaStreamImpl) mediaStream).getDeviceSession();
 
-        var cdi = ((MediaDeviceImpl) device).getCaptureDeviceInfo();
-        System.out.println(cdi);
+//        var cdi = ((MediaDeviceImpl) device).getCaptureDeviceInfo();
+//        System.out.println(cdi);
 
-        var loc = deviceSession.getCaptureDevice().getLocator();
-        System.out.println("loc - " + loc); //  loc - wasapi:{0.0.1.00000000}.{084d8472-0f33-4d29-9e15-b260989801e5}
-        System.out.println(loc.getProtocol());
+//        var loc = deviceSession.getCaptureDevice().getLocator();
+//        System.out.println("loc - " + loc); //  loc - wasapi:{0.0.1.00000000}.{084d8472-0f33-4d29-9e15-b260989801e5}
+//        System.out.println(loc.getProtocol());
 
-        //var devicdId = DataSource.getDeviceID(loc);
-        System.out.println("======================----");
-        String remainder = loc.getRemainder();
-        System.out.println("remainder - " + remainder);
+//        //var devicdId = DataSource.getDeviceID(loc);
+//        System.out.println("======================----");
+//        String remainder = loc.getRemainder();
+//        System.out.println("remainder - " + remainder);
 
         var obj = new PaCommon();
         obj.connect();
@@ -109,7 +109,7 @@ public class PaCommon {
             16000, 16, 1, true, false);
     static ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    public void getAudio_A() {//提供wave格式信息
+    public void getAudio_A() {
         try {
             TargetDataLine targetDataLine = javax.sound.sampled.AudioSystem.getTargetDataLine(format2);
             targetDataLine.open(format2);
