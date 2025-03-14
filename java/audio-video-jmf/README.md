@@ -1,12 +1,19 @@
     implementation("org.jitsi:libjitsi:1.1-34-gb93ce2ee")
-    implementation("org.jitsi:fmj:1.0.2-jitsi")
+    //implementation("org.jitsi:fmj:1.0.2-jitsi") // libjitsi已包含该依赖库
     implementation("org.jitsi:jitsi-lgpl-dependencies:1.2-23-g7b49874:win32-x86-64")
+```
+application {
+    //mainClass = "com.example.jmf.rtp.examples.App"
+    //mainClass = "com.example.jmf.rtp.examples.AVReceive2"
+    mainClass = "com.example.jmf.rtp.examples.AVTransmit2"
+}
 
 tasks.named<JavaExec>("run") { 
     jvmArgs = listOf("-Djava.library.path=D:\\temp\\libjitsi-1.1-34-gb93ce2ee\\win32-x86-64\\")
-    //args +=['--local-port-base=11111', '--remote-host=localhost', '--remote-port-base=22222'] // 接收入参；2分钟自动退出
-    //args +=['--local-port-base=22222', '--remote-host=localhost', '--remote-port-base=11111'] // 发送入参；1分钟自动退出
+    //args = listOf("--local-port-base=11111","--remote-host=localhost","--remote-port-base=22222") // AVReceive2接收入参；2分钟自动退出
+    args = listOf("--local-port-base=22222","--remote-host=localhost","--remote-port-base=11111") // AVTransmit2发送入参；1分钟自动退出
 }
+```
             
             new PortAudioStreamCallback() {
                 @Override
